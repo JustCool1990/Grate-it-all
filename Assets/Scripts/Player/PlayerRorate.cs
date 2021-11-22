@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(PlayerJump), typeof(Player))]
+[RequireComponent(typeof(PlayerJump), typeof(Player), typeof(PlayerCollision))]
 public class PlayerRorate : MonoBehaviour
 {
     [SerializeField] private float _rotationSpeed;
@@ -10,10 +10,11 @@ public class PlayerRorate : MonoBehaviour
     [SerializeField] private float _decelerationRotationSpeed;
 
     private float _rotateZ = 0;
-    private float _fullTurnover = 360;
     private float _decelerationRotationCoefficient = 0;
+    private bool _canRotate = true;
     private PlayerJump _playerJump;
     private Player _player;
+    private PlayerCollision _playerCollision;
     private IEnumerator _coroutine;
     private bool _coroutineIsActive = false;
 
@@ -21,22 +22,26 @@ public class PlayerRorate : MonoBehaviour
     {
         _playerJump = GetComponent<PlayerJump>();
         _player = GetComponent<Player>();
+        _playerCollision = GetComponent<PlayerCollision>();
     }
 
     private void OnEnable()
     {
         _playerJump.Jumped += OnJumped;
         _player.Slicing += OnSlicing;
+        _playerCollision.FacedWithPlatform += OnFacedWithPlatform;
     }
 
     private void OnDisable()
     {
         _playerJump.Jumped -= OnJumped;
         _player.Slicing -= OnSlicing;
+        _playerCollision.FacedWithPlatform -= OnFacedWithPlatform;
     }
 
     private void OnJumped(bool clockwiseRotation)
     {
+        _canRotate = true;
         _decelerationRotationCoefficient = 0;
 
         if (_coroutineIsActive == true)
@@ -51,18 +56,14 @@ public class PlayerRorate : MonoBehaviour
     {
         _coroutineIsActive = true;
 
-        while (Mathf.Abs(_rotateZ) < _fullTurnover)
+        while (_canRotate == true)
         {
             _rotateZ -= (_rotationSpeed * Time.deltaTime - _decelerationRotationCoefficient) * (clockwiseRotation == true ? -1 : 1);
             transform.rotation = Quaternion.Euler(0, 0, _rotateZ);
-
             DecreaseRotationSpeed();
 
             yield return null;
         }
-
-        StopRotation();
-        _coroutineIsActive = false;
     }
 
     private void DecreaseRotationSpeed()
@@ -73,6 +74,7 @@ public class PlayerRorate : MonoBehaviour
 
     private void StopRotation()
     {
+        _canRotate = false;
         _rotateZ = 0;
         transform.rotation = Quaternion.Euler(Vector3.zero);
     }
@@ -83,6 +85,12 @@ public class PlayerRorate : MonoBehaviour
             StopActiveCoroutine();
 
         StopRotation();
+    }
+
+    private void OnFacedWithPlatform(Collision collision)
+    {
+        if (_coroutineIsActive == true)
+            StopActiveCoroutine();
     }
 
     private void StopActiveCoroutine()

@@ -5,13 +5,13 @@ using UnityEngine.Events;
 
 public class KeyboardInput : MonoBehaviour
 {
-    public event UnityAction PressedJumpButton;
+    public event UnityAction JumpButtonClick;
 
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            PressedJumpButton?.Invoke();
+            JumpButtonClick?.Invoke();
         }
     }
 }
