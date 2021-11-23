@@ -11,16 +11,12 @@ public class PlayerCollision : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (other.TryGetComponent(out CutObstacle cutObstacle))
-        {
             FacedWithObstacle?.Invoke(cutObstacle);
-        }
     }
 
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.collider.TryGetComponent(out Platform platform))
-        {
             FacedWithPlatform?.Invoke(collision);
-        }
     }
 }
