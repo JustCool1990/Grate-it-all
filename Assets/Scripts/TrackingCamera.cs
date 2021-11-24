@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Camera : MonoBehaviour
+public class TrackingCamera : MonoBehaviour
 {
     [SerializeField] private Player _player;
     [SerializeField] private PlayerJump _playerJump;

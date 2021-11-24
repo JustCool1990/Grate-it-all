@@ -11,7 +11,10 @@ public class PlayerCollision : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (other.TryGetComponent(out CutObstacle cutObstacle))
+        {
             FacedWithObstacle?.Invoke(cutObstacle);
+            cutObstacle.StartAnimation();
+        }
     }
 
     private void OnCollisionEnter(Collision collision)

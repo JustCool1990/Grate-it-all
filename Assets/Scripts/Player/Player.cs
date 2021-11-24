@@ -52,7 +52,7 @@ public class Player : MonoBehaviour
             yield return null;
         }
 
-        cutObstacle.gameObject.SetActive(false);
+        //cutObstacle.gameObject.SetActive(false);
         _collider.enabled = true;
         Sliced?.Invoke();
     }
