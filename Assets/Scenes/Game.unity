@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.4392634, g: 0.4875611, b: 0.5678081, a: 1}
+  m_IndirectSpecularColor: {r: 0.43926325, g: 0.48756093, b: 0.5678078, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -892,14 +892,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
-  m_LocalRotation: {x: 0.27235726, y: 0.12264844, z: -0.03658169, w: 0.953646}
+  m_LocalRotation: {x: -0.27235723, y: -0.1226485, z: 0.036581866, w: -0.953646}
   m_LocalPosition: {x: 11.5, y: 6.2, z: -7.6}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 705507995}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 31.9, y: 14.6, z: -0.2}
+  m_LocalEulerAnglesHint: {x: 31.9, y: 14.6, z: 359.8}
 --- !u!114 &963194229
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -912,13 +912,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf51eefa1a9db0f4eb76335201edd7bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _player: {fileID: 1599014107}
+  _playerJump: {fileID: 1599014106}
   _offset: {x: -1.9, y: 4.7, z: -7.6}
   _zoomOffset: {x: -1.5, y: 3.2, z: -6}
-  _player: {fileID: 1599014107}
-  _zoomRotation: {x: 25, y: 14.6, z: -0.2}
-  _playerJump: {fileID: 1599014106}
+  _unzoomedAngleX: 31.9
+  _zoomedAngleX: 25
   _followSpeed: 4
-  _zoomSpeed: 4
+  _zoomSpeed: 3.2
+  _accelerationZoomCoefficient: 3.5
 --- !u!1 &1016174944
 GameObject:
   m_ObjectHideFlags: 0
