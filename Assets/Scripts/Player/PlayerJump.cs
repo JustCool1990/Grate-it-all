@@ -15,7 +15,6 @@ public class PlayerJump : MonoBehaviour
     private Vector3 _normal;
     private bool _inJump = false;
     private bool _canJump = true;
-    private float _rotateZ = 0;
     private bool _clockwiseRotation = false;
     private KeyboardInput _keyboardInput;
     private Rigidbody _rigidbody;
@@ -67,21 +66,6 @@ public class PlayerJump : MonoBehaviour
         _inJump = true;
 
         Jumped?.Invoke(clockwiseRotation);
-    }
-
-    private void Jump()
-    {
-        _rigidbody.velocity = Vector3.zero;
-        _rotateZ = transform.rotation.eulerAngles.z;
-        _clockwiseRotation = CheckingRotationAngle(_rotateZ);
-
-        if (_clockwiseRotation == true)
-            _rigidbody.AddForce(new Vector2(-_jumpDirection.x, _jumpDirection.y) / _decreaseJumpPower, ForceMode.Impulse);
-        else
-            _rigidbody.AddForce(_jumpDirection, ForceMode.Impulse);
-
-        _inJump = true;
-
     }
 
     private bool CheckingRotationAngle(float rotationAngle)
