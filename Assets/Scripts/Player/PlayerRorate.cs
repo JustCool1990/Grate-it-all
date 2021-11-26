@@ -11,12 +11,14 @@ public class PlayerRorate : MonoBehaviour
 
     private float _rotateZ = 0;
     private float _decelerationRotationCoefficient = 0;
-    private bool _canRotate = true;
+    private bool _canRotate = false;
     private PlayerJump _playerJump;
     private Player _player;
     private PlayerCollision _playerCollision;
     private IEnumerator _coroutine;
     private bool _coroutineIsActive = false;
+
+    private bool _clockwiseRotation;
 
     private void Awake()
     {
@@ -39,17 +41,32 @@ public class PlayerRorate : MonoBehaviour
         _playerCollision.FacedWithPlatform -= OnFacedWithPlatform;
     }
 
+    private void FixedUpdate()
+    {
+        if(_canRotate == true)
+        {
+            _rotateZ -= (_rotationSpeed * Time.deltaTime - _decelerationRotationCoefficient) * (_clockwiseRotation == true ? -1 : 1);
+            transform.rotation = Quaternion.Euler(0, 0, _rotateZ);
+            DecreaseRotationSpeed();
+        }
+    }
+
     private void OnJumped(bool clockwiseRotation)
     {
         _canRotate = true;
         _decelerationRotationCoefficient = 0;
 
-        if (_coroutineIsActive == true)
+
+        _clockwiseRotation = clockwiseRotation;
+        _rotateZ = transform.rotation.eulerAngles.z;
+
+
+        /*if (_coroutineIsActive == true)
             StopActiveCoroutine();
 
         _rotateZ = transform.rotation.eulerAngles.z;
         _coroutine = ChangeRotation(clockwiseRotation);
-        StartCoroutine(_coroutine);
+        StartCoroutine(_coroutine);*/
     }
 
     private IEnumerator ChangeRotation(bool clockwiseRotation)
@@ -58,7 +75,7 @@ public class PlayerRorate : MonoBehaviour
 
         while (_canRotate == true)
         {
-            _rotateZ -= (_rotationSpeed * Time.deltaTime - _decelerationRotationCoefficient) * (clockwiseRotation == true ? -1 : 1);
+            _rotateZ -= (_rotationSpeed * Time.fixedDeltaTime - _decelerationRotationCoefficient) * (clockwiseRotation == true ? -1 : 1);
             transform.rotation = Quaternion.Euler(0, 0, _rotateZ);
             DecreaseRotationSpeed();
 
@@ -81,6 +98,9 @@ public class PlayerRorate : MonoBehaviour
 
     private void OnSlicing()
     {
+        _canRotate = false;
+
+
         if (_coroutineIsActive == true)
             StopActiveCoroutine();
 
@@ -89,6 +109,9 @@ public class PlayerRorate : MonoBehaviour
 
     private void OnFacedWithPlatform(Collision collision)
     {
+        _canRotate = false;
+
+
         if (_coroutineIsActive == true)
             StopActiveCoroutine();
     }
