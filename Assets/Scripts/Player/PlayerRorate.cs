@@ -7,24 +7,29 @@ public class PlayerRorate : MonoBehaviour
 {
     [SerializeField] private float _rotationSpeed;
     [SerializeField] private float _maxDecreasedRotationSpeed;
-    [SerializeField] private float _decelerationRotationSpeed;
+    [SerializeField] private float _rotationDecelerationSpeed;
+    [SerializeField] private float _minDecelerationAngle;
+    [SerializeField] private float _maxDecelerationAngle;
 
-    private float _rotateZ = 0;
-    private float _decelerationRotationCoefficient = 0;
-    private bool _canRotate = false;
     private PlayerJump _playerJump;
     private Player _player;
     private PlayerCollision _playerCollision;
-    private IEnumerator _coroutine;
-    private bool _coroutineIsActive = false;
-
+    private float _decelerationAngle = 0;
+    private float _halfCircle = 180;
+    private float _rotateZ;
+    private float _decelerationRotationCoefficient = 0;
+    private bool _canRotate;
     private bool _clockwiseRotation;
+    private bool _moreHalfCircleRotation = false;
+    private bool _slowRotation => _moreHalfCircleRotation == false? Mathf.Abs(_rotateZ) > _decelerationAngle : _rotateZ < _decelerationAngle;
 
     private void Awake()
     {
         _playerJump = GetComponent<PlayerJump>();
         _player = GetComponent<Player>();
         _playerCollision = GetComponent<PlayerCollision>();
+
+        StopRotation();
     }
 
     private void OnEnable()
@@ -43,82 +48,55 @@ public class PlayerRorate : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if(_canRotate == true)
-        {
-            _rotateZ -= (_rotationSpeed * Time.deltaTime - _decelerationRotationCoefficient) * (_clockwiseRotation == true ? -1 : 1);
-            transform.rotation = Quaternion.Euler(0, 0, _rotateZ);
-            DecreaseRotationSpeed();
-        }
+        if (_canRotate == true)
+            Rotate();
     }
 
-    private void OnJumped(bool clockwiseRotation)
+    private void OnJumped(bool jumpBack)
     {
         _canRotate = true;
         _decelerationRotationCoefficient = 0;
-
-
-        _clockwiseRotation = clockwiseRotation;
+        _clockwiseRotation = jumpBack;
         _rotateZ = transform.rotation.eulerAngles.z;
+        _moreHalfCircleRotation = ChoosingDecelerationAngle(_rotateZ, _clockwiseRotation);
+        _decelerationAngle = _moreHalfCircleRotation == true ? _minDecelerationAngle : _maxDecelerationAngle;
 
-
-        /*if (_coroutineIsActive == true)
-            StopActiveCoroutine();
-
-        _rotateZ = transform.rotation.eulerAngles.z;
-        _coroutine = ChangeRotation(clockwiseRotation);
-        StartCoroutine(_coroutine);*/
     }
 
-    private IEnumerator ChangeRotation(bool clockwiseRotation)
+    private bool ChoosingDecelerationAngle(float rotation, bool clockwiseRotation)
     {
-        _coroutineIsActive = true;
+        return clockwiseRotation == false && rotation >= _halfCircle ? true : false;
+    }
 
-        while (_canRotate == true)
-        {
-            _rotateZ -= (_rotationSpeed * Time.fixedDeltaTime - _decelerationRotationCoefficient) * (clockwiseRotation == true ? -1 : 1);
-            transform.rotation = Quaternion.Euler(0, 0, _rotateZ);
+    private void Rotate()
+    {
+        _rotateZ -= (_rotationSpeed * Time.deltaTime - _decelerationRotationCoefficient) * (_clockwiseRotation == true ? -1 : 1);
+        transform.rotation = Quaternion.Euler(0, 0, _rotateZ);
+
+        if (_slowRotation == true)
             DecreaseRotationSpeed();
-
-            yield return null;
-        }
     }
 
     private void DecreaseRotationSpeed()
     {
         if (_decelerationRotationCoefficient < _maxDecreasedRotationSpeed)
-            _decelerationRotationCoefficient += Time.deltaTime / _decelerationRotationSpeed;
+            _decelerationRotationCoefficient += Time.deltaTime * _rotationDecelerationSpeed;
     }
 
     private void StopRotation()
     {
         _canRotate = false;
         _rotateZ = 0;
-        transform.rotation = Quaternion.Euler(Vector3.zero);
     }
 
     private void OnSlicing()
     {
-        _canRotate = false;
-
-
-        if (_coroutineIsActive == true)
-            StopActiveCoroutine();
-
         StopRotation();
+        transform.rotation = Quaternion.Euler(Vector3.zero);
     }
 
-    private void OnFacedWithPlatform(Collision collision)
+    private void OnFacedWithPlatform(bool collisionPoint)
     {
-        _canRotate = false;
-
-
-        if (_coroutineIsActive == true)
-            StopActiveCoroutine();
-    }
-
-    private void StopActiveCoroutine()
-    {
-        StopCoroutine(_coroutine);
-        _coroutineIsActive = false;
+        StopRotation();
     }
 }

@@ -8,14 +8,12 @@ using UnityEngine.Events;
 public class PlayerJump : MonoBehaviour
 {
     [SerializeField] private Vector2 _jumpDirection;
-    [SerializeField] private float _reboundRatio;
     [SerializeField] private float _minReverseJumpAngle, _maxReverseJumpAngle;
     [SerializeField] private float _decreaseJumpPower;
 
-    private Vector3 _normal;
     private bool _inJump = false;
     private bool _canJump = true;
-    private bool _clockwiseRotation = false;
+    private bool _jumpOnClockwiseRotation = false;
     private KeyboardInput _keyboardInput;
     private Rigidbody _rigidbody;
     private PlayerCollision _playerCollision;
@@ -56,16 +54,8 @@ public class PlayerJump : MonoBehaviour
     private void PrepareJump()
     {
         _rigidbody.velocity = Vector3.zero;
-        _clockwiseRotation = CheckingRotationAngle(transform.rotation.eulerAngles.z);
-        Jumping(_clockwiseRotation);
-    }
-
-    private void Jumping(bool clockwiseRotation)
-    {
-        _rigidbody.AddForce(clockwiseRotation == true? new Vector2(-_jumpDirection.x, _jumpDirection.y) / _decreaseJumpPower : _jumpDirection, ForceMode.Impulse);
-        _inJump = true;
-
-        Jumped?.Invoke(clockwiseRotation);
+        _jumpOnClockwiseRotation = CheckingRotationAngle(transform.rotation.eulerAngles.z);
+        Jumping(DetermineDirection(_jumpOnClockwiseRotation), _jumpOnClockwiseRotation);
     }
 
     private bool CheckingRotationAngle(float rotationAngle)
@@ -73,21 +63,31 @@ public class PlayerJump : MonoBehaviour
         return rotationAngle > _minReverseJumpAngle && rotationAngle < _maxReverseJumpAngle;
     }
 
-    private void OnFacedWithPlatform(Collision collision)
+    private Vector3 DetermineDirection(bool jumpBack)
+    {
+        return jumpBack == true ? new Vector2(-_jumpDirection.x, _jumpDirection.y): _jumpDirection;
+    }
+
+    private void Jumping(Vector3 direction, bool jumpBack)
+    {
+        if (jumpBack == true)
+            direction /= _decreaseJumpPower;
+
+        _rigidbody.AddForce(direction, ForceMode.VelocityChange);
+        _inJump = true;
+
+        Jumped?.Invoke(jumpBack);
+    }
+
+    private void OnFacedWithPlatform(bool collisionOnLeft)
     {
         if (_inJump == true)
         {
             _rigidbody.velocity = Vector3.zero;
-            _normal = collision.contacts[0].normal;
-            _rigidbody.AddForce(_normal * _reboundRatio, ForceMode.Impulse);
-            Jumped?.Invoke(CheckCollisionPoint(collision));
-            _inJump = false;
-        }
-    }
+            Jumping(DetermineDirection(collisionOnLeft), _inJump);
 
-    private bool CheckCollisionPoint(Collision collision)
-    {
-        return transform.position.x > collision.gameObject.transform.position.x;
+            Jumped?.Invoke(!collisionOnLeft);
+        }
     }
 
     private void OnSlicing()

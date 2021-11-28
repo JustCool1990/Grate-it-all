@@ -1,25 +1,25 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
-[RequireComponent(typeof(Collider), typeof(Animator))]
+[RequireComponent(typeof(Collider))]
 public class CutObstacle : MonoBehaviour
 {
     private Collider _collider;
-    private Animator _animator;
 
     public CuttingStartPoint Point { get; private set; }
+    public event UnityAction Decompose;
 
     private void Awake()
     {
         _collider = GetComponent<Collider>();
-        _animator = GetComponent<Animator>();
         Point = GetComponentInChildren<CuttingStartPoint>();
     }
 
-    public void StartAnimation()
+    public void StartDecompose()
     {
-        _animator.SetTrigger("Sliced");
+        Decompose?.Invoke();
     }
 
     public void DisableCollider()
