@@ -86,7 +86,7 @@ public class PlayerJump : MonoBehaviour
             _rigidbody.velocity = Vector3.zero;
             Jumping(DetermineDirection(collisionOnLeft), _inJump);
 
-            Jumped?.Invoke(!collisionOnLeft);
+            Jumped?.Invoke(collisionOnLeft);
         }
     }
 

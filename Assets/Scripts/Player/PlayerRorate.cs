@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(PlayerJump), typeof(Player), typeof(PlayerCollision))]
+[RequireComponent(typeof(PlayerJump), typeof(Player))]
 public class PlayerRorate : MonoBehaviour
 {
     [SerializeField] private float _rotationSpeed;
@@ -13,7 +13,6 @@ public class PlayerRorate : MonoBehaviour
 
     private PlayerJump _playerJump;
     private Player _player;
-    private PlayerCollision _playerCollision;
     private float _decelerationAngle = 0;
     private float _halfCircle = 180;
     private float _rotateZ;
@@ -27,7 +26,6 @@ public class PlayerRorate : MonoBehaviour
     {
         _playerJump = GetComponent<PlayerJump>();
         _player = GetComponent<Player>();
-        _playerCollision = GetComponent<PlayerCollision>();
 
         StopRotation();
     }
@@ -36,14 +34,12 @@ public class PlayerRorate : MonoBehaviour
     {
         _playerJump.Jumped += OnJumped;
         _player.Slicing += OnSlicing;
-        _playerCollision.FacedWithPlatform += OnFacedWithPlatform;
     }
 
     private void OnDisable()
     {
         _playerJump.Jumped -= OnJumped;
         _player.Slicing -= OnSlicing;
-        _playerCollision.FacedWithPlatform -= OnFacedWithPlatform;
     }
 
     private void FixedUpdate()
@@ -93,10 +89,5 @@ public class PlayerRorate : MonoBehaviour
     {
         StopRotation();
         transform.rotation = Quaternion.Euler(Vector3.zero);
-    }
-
-    private void OnFacedWithPlatform(bool collisionPoint)
-    {
-        StopRotation();
     }
 }
