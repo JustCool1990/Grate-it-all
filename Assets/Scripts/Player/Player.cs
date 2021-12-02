@@ -43,6 +43,7 @@ public class Player : MonoBehaviour
 
     private IEnumerator SliceObstacle(CutObstacle cutObstacle)
     {
+        cutObstacle.Init(this);
         Vector3 target = new Vector3(transform.position.x, transform.position.y - cutObstacle.transform.localScale.y, transform.position.z);
 
         while (transform.position != target)

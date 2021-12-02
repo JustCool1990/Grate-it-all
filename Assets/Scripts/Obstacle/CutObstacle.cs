@@ -6,7 +6,10 @@ using UnityEngine.Events;
 [RequireComponent(typeof(Collider))]
 public class CutObstacle : MonoBehaviour
 {
+    [SerializeField] private List<CutObstaclePiece> _cutObstaclePieces;
+
     private Collider _collider;
+    private Player _player;
 
     public CuttingStartPoint Point { get; private set; }
     public event UnityAction Decompose;
@@ -17,6 +20,12 @@ public class CutObstacle : MonoBehaviour
         Point = GetComponentInChildren<CuttingStartPoint>();
     }
 
+    public void Init(Player player)
+    {
+        _player = player;
+        _player.Sliced += OnSliced;
+    }
+
     public void StartDecompose()
     {
         Decompose?.Invoke();
@@ -25,5 +34,20 @@ public class CutObstacle : MonoBehaviour
     public void DisableCollider()
     {
         _collider.enabled = false;
+    }
+
+    private void OnSliced()
+    {
+        EngageGravity();
+        _player.Sliced -= OnSliced;
+    }
+
+    private void EngageGravity()
+    {
+        foreach (var cutObstacle in _cutObstaclePieces)
+        {
+            Debug.Log(cutObstacle.name);
+            cutObstacle.EngageGravity();
+        }
     }
 }
