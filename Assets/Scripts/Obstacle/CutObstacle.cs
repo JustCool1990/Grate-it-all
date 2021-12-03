@@ -20,12 +20,6 @@ public class CutObstacle : MonoBehaviour
         Point = GetComponentInChildren<CuttingStartPoint>();
     }
 
-    public void Init(Player player)
-    {
-        _player = player;
-        _player.Sliced += OnSliced;
-    }
-
     public void StartDecompose()
     {
         Decompose?.Invoke();
@@ -34,6 +28,12 @@ public class CutObstacle : MonoBehaviour
     public void DisableCollider()
     {
         _collider.enabled = false;
+    }
+
+    public void Init(Player player)
+    {
+        _player = player;
+        _player.Sliced += OnSliced;
     }
 
     private void OnSliced()
@@ -45,9 +45,6 @@ public class CutObstacle : MonoBehaviour
     private void EngageGravity()
     {
         foreach (var cutObstacle in _cutObstaclePieces)
-        {
-            Debug.Log(cutObstacle.name);
             cutObstacle.EngageGravity();
-        }
     }
 }

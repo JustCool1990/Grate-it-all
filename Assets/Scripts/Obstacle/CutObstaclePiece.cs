@@ -16,19 +16,8 @@ public class CutObstaclePiece : MonoBehaviour
         _rigidbody.centerOfMass = _centerOfMass;
     }
 
-    private void Update()
-    {
-        _rigidbody.centerOfMass = _centerOfMass;
-    }
-
     public void EngageGravity()
     {
         _rigidbody.isKinematic = false;
     }
-
-    /*private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawSphere(_rigidbody.worldCenterOfMass, 0.1f);
-    }*/
 }
